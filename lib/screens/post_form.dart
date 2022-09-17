@@ -46,6 +46,7 @@ class _PostFormPageState extends State<PostFormPage> {
     if (response.error == null) {
       Navigator.pop(context);
     } else if (response.error == unauthorized) {
+      // nanti diganti dengan snackbar
       logout().then((value) => {
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const LoginPage()),
