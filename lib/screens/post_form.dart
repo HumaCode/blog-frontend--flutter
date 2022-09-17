@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blog_laravel/constants.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostFormPage extends StatefulWidget {
   const PostFormPage({Key? key}) : super(key: key);
@@ -10,8 +13,25 @@ class PostFormPage extends StatefulWidget {
 
 class _PostFormPageState extends State<PostFormPage> {
   final GlobalKey<FormState> _formkey = GlobalKey();
-  TextEditingController _txtControllerBody = TextEditingController();
+  final TextEditingController _txtControllerBody = TextEditingController();
   bool loading = false;
+  File? image;
+
+  // image picker
+  Future<File?> getImage() async {
+    try {
+      final pickedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (pickedImage != null) {
+        setState(() {
+          image = File(pickedImage.path);
+        });
+      }
+      // ignore: empty_catches
+    } catch (e) {}
+    return image;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +49,23 @@ class _PostFormPageState extends State<PostFormPage> {
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
+                  decoration: BoxDecoration(
+                    image: image == null
+                        ? null
+                        : DecorationImage(
+                            image: FileImage(image ?? File('')),
+                            fit: BoxFit.cover,
+                          ),
+                  ),
                   child: Center(
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        getImage();
+                      },
                       icon: const Icon(
                         Icons.image,
                         size: 50,
-                        color: Colors.black,
+                        color: Colors.black38,
                       ),
                     ),
                   ),
