@@ -1,5 +1,6 @@
 // loginn
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_blog_laravel/constants.dart';
 import 'package:flutter_blog_laravel/models/api_response.dart';
@@ -121,4 +122,11 @@ Future<int> getUserId() async {
 Future<bool> logout() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   return await pref.remove('token');
+}
+
+// get base64 encode image
+String? getStringImage(File? file) {
+  if (file == null) return null;
+
+  return base64Encode(file.readAsBytesSync());
 }

@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blog_laravel/constants.dart';
+import 'package:flutter_blog_laravel/models/api_response.dart';
+import 'package:flutter_blog_laravel/screens/login.dart';
+import 'package:flutter_blog_laravel/services/post_service.dart';
+import 'package:flutter_blog_laravel/services/user_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PostFormPage extends StatefulWidget {
@@ -33,6 +37,30 @@ class _PostFormPageState extends State<PostFormPage> {
     return image;
   }
 
+  // function create post
+  void _createPost() async {
+    String? img = image == null ? null : getStringImage(image);
+
+    ApiResponse response = await createPost(_txtControllerBody.text, img);
+
+    if (response.error == null) {
+      Navigator.pop(context);
+    } else if (response.error == unauthorized) {
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false),
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+
+      setState(() {
+        loading = !loading;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +69,7 @@ class _PostFormPageState extends State<PostFormPage> {
         centerTitle: true,
       ),
       body: loading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : ListView(
@@ -96,6 +124,7 @@ class _PostFormPageState extends State<PostFormPage> {
                     setState(() {
                       if (_formkey.currentState!.validate()) {
                         loading = !loading;
+                        _createPost();
                       }
                     });
                   }),
