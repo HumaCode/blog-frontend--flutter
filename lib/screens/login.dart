@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   void _saveAndRedirectToHome(User user) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString('token', user.token ?? '');
-    await pref.setInt('user_id', 0);
+    await pref.setInt('userId', user.id ?? 0);
 
     // redirect to home
     Navigator.of(context).pushAndRemoveUntil(
