@@ -21,7 +21,8 @@ class _CommentScreenState extends State<CommentScreen> {
   List<dynamic> _commentList = [];
   bool _loading = true;
   int userId = 0;
-  TextEditingController _txtCommentController = TextEditingController();
+  int _editCommentId = 0;
+  final TextEditingController _txtCommentController = TextEditingController();
 
   // get comment
   Future<void> _getComments() async {
@@ -47,6 +48,7 @@ class _CommentScreenState extends State<CommentScreen> {
     }
   }
 
+// buat comment
   void _createComment() async {
     ApiResponse response =
         await createComment(widget.postId ?? 0, _txtCommentController.text);
@@ -85,6 +87,28 @@ class _CommentScreenState extends State<CommentScreen> {
           .showSnackBar(SnackBar(content: Text('${response.error}')));
     }
   }
+
+  // // edit comment
+  // void _editComment() async {
+  //   ApiResponse response =
+  //       await editComment(_editCommentId, _txtCommentController.text);
+
+  //   if (response.error == null) {
+  //     _editCommentId = 0;
+  //     _txtCommentController.clear();
+  //     _getComments();
+  //   } else if (response.error == unauthorized) {
+  //     // nanti diganti dengan snackbar
+  //     logout().then((value) => {
+  //           Navigator.of(context).pushAndRemoveUntil(
+  //               MaterialPageRoute(builder: (context) => const LoginPage()),
+  //               (route) => false),
+  //         });
+  //   } else {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text('${response.error}')));
+  //   }
+  // }
 
   @override
   void initState() {
@@ -169,21 +193,12 @@ class _CommentScreenState extends State<CommentScreen> {
                                             ),
                                             itemBuilder: (context) => [
                                               const PopupMenuItem(
-                                                value: 'edit',
-                                                child: Text('Edit'),
-                                              ),
-                                              const PopupMenuItem(
                                                 value: 'delete',
                                                 child: Text('Delete'),
                                               ),
                                             ],
                                             onSelected: (val) {
-                                              if (val == 'edit') {
-                                                // edit
-                                              } else {
-                                                // hapus
-                                                _deleteComment(comment.id!);
-                                              }
+                                              _deleteComment(comment.id!);
                                             },
                                           )
                                         : const SizedBox(),
