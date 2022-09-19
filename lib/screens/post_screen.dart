@@ -115,13 +115,15 @@ class _PostScreenPageState extends State<PostScreenPage> {
                             child: Row(
                               children: [
                                 Container(
-                                  width: 38,
-                                  height: 38,
+                                  width: 50,
+                                  height: 50,
                                   decoration: BoxDecoration(
-                                    image: post.user!.image == null
+                                    image: post.user!.image != null
                                         ? DecorationImage(
                                             image: NetworkImage(
-                                                '${post.user!.image}'))
+                                                '${post.user!.image}'),
+                                            fit: BoxFit.cover,
+                                          )
                                         : null,
                                     borderRadius: BorderRadius.circular(25),
                                     color: Colors.amber,
