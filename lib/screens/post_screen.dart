@@ -3,6 +3,7 @@ import 'package:flutter_blog_laravel/constants.dart';
 import 'package:flutter_blog_laravel/models/api_response.dart';
 import 'package:flutter_blog_laravel/models/post.dart';
 import 'package:flutter_blog_laravel/screens/login.dart';
+import 'package:flutter_blog_laravel/screens/post_form.dart';
 import 'package:flutter_blog_laravel/services/post_service.dart';
 import 'package:flutter_blog_laravel/services/user_service.dart';
 
@@ -158,6 +159,14 @@ class _PostScreenPageState extends State<PostScreenPage> {
                                   onSelected: (val) {
                                     if (val == 'edit') {
                                       // edit
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PostFormPage(
+                                                    title: 'Edit Post',
+                                                    post: post,
+                                                  )));
                                     } else {
                                       // delete
                                       _handleDeletePost(post.id ?? 0);

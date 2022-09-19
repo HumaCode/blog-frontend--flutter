@@ -3,13 +3,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_blog_laravel/constants.dart';
 import 'package:flutter_blog_laravel/models/api_response.dart';
+import 'package:flutter_blog_laravel/models/post.dart';
 import 'package:flutter_blog_laravel/screens/login.dart';
 import 'package:flutter_blog_laravel/services/post_service.dart';
 import 'package:flutter_blog_laravel/services/user_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PostFormPage extends StatefulWidget {
-  const PostFormPage({Key? key}) : super(key: key);
+  final Post? post;
+  final String? title;
+
+  const PostFormPage({
+    Key? key,
+    this.post,
+    this.title,
+  }) : super(key: key);
 
   @override
   State<PostFormPage> createState() => _PostFormPageState();
@@ -62,11 +70,42 @@ class _PostFormPageState extends State<PostFormPage> {
     }
   }
 
+  // function edit post
+  void _editPost(int postId) async {
+    ApiResponse response = await editPost(postId, _txtControllerBody.text);
+
+    if (response.error == null) {
+      Navigator.pop(context);
+    } else if (response.error == unauthorized) {
+      // nanti diganti dengan snackbar
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false),
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+
+      setState(() {
+        loading = !loading;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    if (widget.post != null) {
+      _txtControllerBody.text = widget.post!.body ?? '';
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Post'),
+        title: Text('${widget.title}'),
         centerTitle: true,
       ),
       body: loading
@@ -75,30 +114,32 @@ class _PostFormPageState extends State<PostFormPage> {
             )
           : ListView(
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: image == null
-                        ? null
-                        : DecorationImage(
-                            image: FileImage(image ?? File('')),
-                            fit: BoxFit.cover,
+                widget.post != null
+                    ? const SizedBox()
+                    : Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          image: image == null
+                              ? null
+                              : DecorationImage(
+                                  image: FileImage(image ?? File('')),
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () {
+                              getImage();
+                            },
+                            icon: const Icon(
+                              Icons.image,
+                              size: 50,
+                              color: Colors.black38,
+                            ),
                           ),
-                  ),
-                  child: Center(
-                    child: IconButton(
-                      onPressed: () {
-                        getImage();
-                      },
-                      icon: const Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Colors.black38,
+                        ),
                       ),
-                    ),
-                  ),
-                ),
                 Form(
                   key: _formkey,
                   child: Padding(
@@ -125,7 +166,12 @@ class _PostFormPageState extends State<PostFormPage> {
                     setState(() {
                       if (_formkey.currentState!.validate()) {
                         loading = !loading;
-                        _createPost();
+
+                        if (widget.post == null) {
+                          _createPost();
+                        } else {
+                          _editPost(widget.post!.id ?? 0);
+                        }
                       }
                     });
                   }),
