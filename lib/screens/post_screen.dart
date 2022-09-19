@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blog_laravel/constants.dart';
 import 'package:flutter_blog_laravel/models/api_response.dart';
 import 'package:flutter_blog_laravel/models/post.dart';
+import 'package:flutter_blog_laravel/screens/comment_screen.dart';
 import 'package:flutter_blog_laravel/screens/login.dart';
 import 'package:flutter_blog_laravel/screens/post_form.dart';
 import 'package:flutter_blog_laravel/services/post_service.dart';
@@ -214,7 +215,14 @@ class _PostScreenPageState extends State<PostScreenPage> {
                           kLikeAndComment(
                             Icons.sms_outlined,
                             Colors.black38,
-                            () {},
+                            () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CommentScreen(
+                                            postId: post.id,
+                                          )));
+                            },
                           ),
                         ],
                       ),
