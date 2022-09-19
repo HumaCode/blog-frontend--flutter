@@ -12,7 +12,8 @@ Future<ApiResponse> getPosts() async {
 
   try {
     String token = await getToken();
-    final response = await http.get(Uri.parse(postURL), headers: {
+    final response = await http
+        .get(Uri.parse('https://tes.sipandawa.com/public/api/posts'), headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     });
@@ -136,5 +137,33 @@ Future<ApiResponse> deletePost(int postId) async {
     apiResponse.error = serverError;
   }
 
+  return apiResponse;
+}
+
+// like or unlike post
+Future<ApiResponse> likeUnlikePost(int postId) async {
+  ApiResponse apiResponse = ApiResponse();
+  try {
+    String token = await getToken();
+    final response =
+        await http.post(Uri.parse('$postURL/$postId/likes'), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = jsonDecode(response.body)['message'];
+        break;
+      case 401:
+        apiResponse.error = unauthorized;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = serverError;
+  }
   return apiResponse;
 }

@@ -22,16 +22,17 @@ class Post {
   // map jason post
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-        id: json['id'],
-        body: json['body'],
-        image: json['image'],
-        likesCount: json['likesCount'],
-        commentsCount: json['commentsCount'],
-        selfLiked: json['likes'].length > 0,
-        user: User(
-          id: json['user']['id'],
-          name: json['user']['name'],
-          image: json['user']['image'],
-        ));
+      id: json['id'],
+      body: json['body'],
+      image: json['image'],
+      likesCount: json['like_count'],
+      commentsCount: json['comment_count'],
+      selfLiked: json['likes'].length > 0,
+      user: User(
+        id: json['user']['id'],
+        name: json['user']['name'],
+        image: json['user']['image'],
+      ),
+    );
   }
 }

@@ -42,6 +42,45 @@ class _PostScreenPageState extends State<PostScreenPage> {
     }
   }
 
+  // post like dislike
+  void _handlePostLikeDislike(int postId) async {
+    ApiResponse response = await likeUnlikePost(postId);
+
+    // response
+    if (response.error == null) {
+      retrievePosts();
+    } else if (response.error == unauthorized) {
+      // nanti diganti dengan snackbar
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false),
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+  }
+
+  // delete post
+  void _handleDeletePost(int postId) async {
+    ApiResponse response = await deletePost(postId);
+
+    if (response.error == null) {
+      retrievePosts();
+    } else if (response.error == unauthorized) {
+      // nanti diganti dengan snackbar
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false),
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+  }
+
   @override
   void initState() {
     retrievePosts();
@@ -121,6 +160,7 @@ class _PostScreenPageState extends State<PostScreenPage> {
                                       // edit
                                     } else {
                                       // delete
+                                      _handleDeletePost(post.id ?? 0);
                                     }
                                   },
                                 )
@@ -147,14 +187,15 @@ class _PostScreenPageState extends State<PostScreenPage> {
                       Row(
                         children: [
                           kLikeAndComment(
-                            post.likesCount ?? 0,
                             post.selfLiked == true
                                 ? Icons.favorite
                                 : Icons.favorite_outline,
                             post.selfLiked == true
                                 ? Colors.red
                                 : Colors.black38,
-                            () {},
+                            () {
+                              _handlePostLikeDislike(post.id!);
+                            },
                           ),
                           Container(
                             height: 25,
@@ -162,7 +203,6 @@ class _PostScreenPageState extends State<PostScreenPage> {
                             color: Colors.black38,
                           ),
                           kLikeAndComment(
-                            post.commentsCount ?? 0,
                             Icons.sms_outlined,
                             Colors.black38,
                             () {},

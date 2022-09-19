@@ -67,8 +67,7 @@ Row kLoginRegister(String text, String label, Function onTap) {
 }
 
 // likes and comments btn
-Expanded kLikeAndComment(
-    int value, IconData icon, Color color, Function onTap) {
+Expanded kLikeAndComment( IconData icon, Color color, Function onTap) {
   return Expanded(
     child: Material(
       child: InkWell(
@@ -83,8 +82,6 @@ Expanded kLikeAndComment(
                 size: 16,
                 color: color,
               ),
-              const SizedBox(width: 4),
-              Text('$value'),
             ],
           ),
         ),
